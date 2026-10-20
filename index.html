@@ -182,23 +182,41 @@
     const form = document.getElementById("chatForm");
     const input = document.getElementById("userInput");
 
-    form.addEventListener("submit", function(event) {
-      event.preventDefault();
+form.addEventListener("submit", async function(event) {
+  event.preventDefault();
 
-      const message = input.value.trim();
+  const message = input.value.trim();
+  if (!message) return;
 
-      if (!message) return;
+  addMessage(message, "user");
+  input.value = "";
 
-      addMessage(message, "user");
-      input.value = "";
+  const loadingMessage = addMessage("Thinking... 💭", "bot");
 
-      addMessage(
-        "Your message has been received! The real AI connection is our next step. For now, this website is a working chat interface, not yet connected to an AI model.",
-        "bot"
-      );
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
     });
 
-    function addMessage(text, type) {
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    loadingMessage.textContent = data.reply;
+  } catch (error) {
+    loadingMessage.textContent =
+      "Sorry, I couldn't connect to the AI. Please try again.";
+    console.error("Chat error:", error);
+  }
+}):
+
+   function addMessage(text, type) {
       const bubble = document.createElement("div");
       bubble.className = "message " + type;
 
@@ -215,7 +233,7 @@
       bubble.appendChild(content);
       chat.appendChild(bubble);
 
-      chat.scrollTop = chat.scrollHeight;
+      chat.scrollTop = chat.scrollHeight; return content;
     }
   </script>
 </body>
