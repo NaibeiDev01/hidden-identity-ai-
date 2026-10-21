@@ -178,7 +178,6 @@
   </div>
 
   <script>
-    const chat = document.getElementById("chat");
     const form = document.getElementById("chatForm");
     const input = document.getElementById("userInput");
 
@@ -215,7 +214,6 @@ form.addEventListener("submit", async function(event) {
     console.error("Chat error:", error);
   }
 }):
-
    function addMessage(text, type) {
       const bubble = document.createElement("div");
       bubble.className = "message " + type;
